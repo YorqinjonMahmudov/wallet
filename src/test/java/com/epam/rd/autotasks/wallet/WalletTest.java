@@ -114,6 +114,7 @@ public class WalletTest {
         checkWallet(startBalance, totalPaid.get(), counts, counts);
     }
 
+    //TODO
     @ParameterizedTest(name = "Parallelism = {0}")
     @ValueSource(ints = {1, 2, 3, 4, 8, 16, 32})
     @DisplayName("Parallel execution test")
@@ -236,7 +237,7 @@ public class WalletTest {
         return accounts.stream().mapToLong(Account::balance).sum();
     }
 
-    private void executePayment(Wallet wallet, String recipient, long price, AtomicLong totalPaid)
+    private synchronized void executePayment(Wallet wallet, String recipient, long price, AtomicLong totalPaid)
             throws Exception {
         totalPaid.addAndGet(price);
         wallet.pay(recipient, price);
@@ -248,7 +249,7 @@ public class WalletTest {
         checkLog(transactionsCount, uniqueRecipients, totalPaid);
     }
 
-    private void checkResultingBalanceAndCummulativePrice(long startBalance, long totalPaid) {
+    private synchronized void checkResultingBalanceAndCummulativePrice(long startBalance, long totalPaid) {
         long currentBalance = totalBalance();
         assertEquals(totalPaid, startBalance - currentBalance);
     }
